@@ -46,6 +46,8 @@ func init() {
 	flag.DurationVar(&GracefulTimeout, "grace", 5*time.Second, "Maximum duration of graceful shutdown")
 	flag.BoolVar(&HTTP2, "http2", true, "Use HTTP/2")
 	flag.BoolVar(&QUIC, "quic", false, "Use experimental QUIC")
+	flag.BoolVar(&MPQUIC, "mp", false, "Use experimental multipath QUIC")
+	flag.StringVar(&MPQUIC_SCHED, "scheduler", "rr", "Scheduling scheme for multipath QUIC")
 
 	caddy.RegisterServerType(serverType, caddy.ServerType{
 		Directives: func() []string { return directives },
@@ -736,4 +738,10 @@ var (
 
 	// QUIC indicates whether QUIC is enabled or not.
 	QUIC bool
+
+	// MPQUIC indicates whether multipath QUIC is enabled or not
+	MPQUIC bool
+
+	// MPQUIC_SCHED indicates the scheduling scheme used for multipath QUIC
+	MPQUIC_SCHED string
 )

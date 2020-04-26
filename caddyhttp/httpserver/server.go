@@ -35,13 +35,14 @@ import (
 	"github.com/caddyserver/caddy/caddyhttp/staticfiles"
 	"github.com/caddyserver/caddy/caddytls"
 	"github.com/caddyserver/caddy/telemetry"
-	"github.com/lucas-clemente/quic-go/http3"
+	"github.com/lucas-clemente/quic-go"
+	"github.com/lucas-clemente/quic-go/h2quic"
 )
 
 // Server is the HTTP server implementation.
 type Server struct {
 	Server      *http.Server
-	quicServer  *http3.Server
+	quicServer  *h2quic.Server
 	sites       []*SiteConfig
 	connTimeout time.Duration // max time to wait for a connection before force stop
 	tlsGovChan  chan struct{} // close to stop the TLS maintenance goroutine
@@ -104,7 +105,20 @@ func NewServer(addr string, group []*SiteConfig) (*Server, error) {
 	if s.Server.TLSConfig != nil {
 		// enable QUIC if desired (requires HTTP/2)
 		if HTTP2 && QUIC {
-			s.quicServer = &http3.Server{Server: s.Server}
+			var maxPathID uint8 = 0
+			if MPQUIC {
+				maxPathID = 2
+			}
+
+			config := quic.Config{
+				MaxPathID:            maxPathID,
+				SchedulingSchemeName: MPQUIC_SCHED,
+			}
+
+			s.quicServer = &h2quic.Server{
+				Server:     s.Server,
+				QuicConfig: &config,
+			}
 			s.Server.Handler = s.wrapWithSvcHeaders(s.Server.Handler)
 		}
 
