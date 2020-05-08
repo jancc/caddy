@@ -36,6 +36,7 @@ import (
 	"github.com/caddyserver/caddy/caddytls"
 	"github.com/caddyserver/caddy/telemetry"
 	"github.com/lucas-clemente/quic-go"
+	"github.com/lucas-clemente/quic-go/fec"
 	"github.com/lucas-clemente/quic-go/h2quic"
 )
 
@@ -110,9 +111,15 @@ func NewServer(addr string, group []*SiteConfig) (*Server, error) {
 				maxPathID = 2
 			}
 
+			fs := fec.NewConstantRedundancyController(FECNDataSymbols, 1, 1, 1)
+
 			config := quic.Config{
-				MaxPathID:            maxPathID,
-				SchedulingSchemeName: MPQUIC_SCHED,
+				MaxPathID:                   maxPathID,
+				SchedulingSchemeName:        MPQUIC_SCHED,
+				RedundancyController:        fs,
+				FECScheme:                   quic.XORFECScheme,
+				ProtectReliableStreamFrames: FECEnable,
+				DisableFECRecoveredFrames:   !FECRecoveredFrames,
 			}
 
 			s.quicServer = &h2quic.Server{

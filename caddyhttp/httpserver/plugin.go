@@ -48,6 +48,9 @@ func init() {
 	flag.BoolVar(&QUIC, "quic", false, "Use experimental QUIC")
 	flag.BoolVar(&MPQUIC, "mp", false, "Use experimental multipath QUIC")
 	flag.StringVar(&MPQUIC_SCHED, "scheduler", "rr", "Scheduling scheme for multipath QUIC")
+	flag.BoolVar(&FECEnable, "fec", false, "Enable QUIC-FEC")
+	flag.BoolVar(&FECRecoveredFrames, "fecrcv", false, "Enable QUIC-FEC RECOVERED frames")
+	flag.UintVar(&FECNDataSymbols, "fecn", 4, "Number of data symbols in a FEC block")
 
 	caddy.RegisterServerType(serverType, caddy.ServerType{
 		Directives: func() []string { return directives },
@@ -744,4 +747,12 @@ var (
 
 	// MPQUIC_SCHED indicates the scheduling scheme used for multipath QUIC
 	MPQUIC_SCHED string
+
+	FECEnable bool
+
+	FECRecoveredFrames bool
+
+	FECScheme string
+
+	FECNDataSymbols uint
 )
