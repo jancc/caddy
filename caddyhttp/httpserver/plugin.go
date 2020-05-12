@@ -49,7 +49,6 @@ func init() {
 	flag.BoolVar(&MPQUIC, "mp", false, "Use experimental multipath QUIC")
 	flag.StringVar(&MPQUIC_SCHED, "scheduler", "rr", "Scheduling scheme for multipath QUIC")
 	flag.BoolVar(&FECEnable, "fec", false, "Enable QUIC-FEC")
-	flag.BoolVar(&FECRecoveredFrames, "fecrcv", false, "Enable QUIC-FEC RECOVERED frames")
 	flag.UintVar(&FECNDataSymbols, "fecn", 4, "Number of data symbols in a FEC block")
 
 	caddy.RegisterServerType(serverType, caddy.ServerType{
@@ -749,8 +748,6 @@ var (
 	MPQUIC_SCHED string
 
 	FECEnable bool
-
-	FECRecoveredFrames bool
 
 	FECScheme string
 

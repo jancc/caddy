@@ -119,7 +119,7 @@ func NewServer(addr string, group []*SiteConfig) (*Server, error) {
 				RedundancyController:        fs,
 				FECScheme:                   quic.XORFECScheme,
 				ProtectReliableStreamFrames: FECEnable,
-				DisableFECRecoveredFrames:   !FECRecoveredFrames,
+				DisableFECRecoveredFrames:   false,
 			}
 
 			s.quicServer = &h2quic.Server{
